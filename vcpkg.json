@@ -1,0 +1,9 @@
+{
+  "name": "warptps",
+  "version-string": "1.0.0",
+  "dependencies": [
+    "boost",
+    "opencv4",
+    "zlib"
+  ]
+}

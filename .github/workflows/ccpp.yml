@@ -5,15 +5,38 @@ on: [push]
 jobs:
   build:
 
-    runs-on: ubuntu-latest
-    
+    runs-on: windows-latest
+
     steps:
     - uses: actions/checkout@v2
-    - name: configure
-      run: ./configure
-    - name: make
-      run: make
-    - name: make check
-      run: make check
-    - name: make distcheck
-      run: make distcheck
+      with:
+        submodules: true
+
+    - name: Install MFC libraries
+      run: |
+        $vsWhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+        $vsPath = & $vsWhere -latest -property installationPath
+        Write-Host "Visual Studio path: $vsPath"
+        $installer = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vs_installer.exe"
+        & $installer modify --installPath "$vsPath" --add Microsoft.VisualStudio.Component.VC.ATLMFC --quiet --wait
+      shell: pwsh
+
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v1.1
+
+    - name: Setup vcpkg
+      uses: lukka/run-vcpkg@v11
+      with:
+        vcpkgGitCommitId: 'f7423ee180c4b7f40d43402c2feb3859161ef625'
+
+    - name: Install vcpkg dependencies
+      run: |
+        vcpkg install boost:x64-windows opencv4:x64-windows zlib:x64-windows
+        vcpkg integrate install
+      shell: cmd
+
+    - name: Restore NuGet packages
+      run: nuget restore Blendy.sln
+
+    - name: Build
+      run: msbuild Blendy.sln /p:Configuration=Release /p:Platform=x64
