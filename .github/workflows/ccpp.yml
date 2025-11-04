@@ -12,16 +12,22 @@ jobs:
       with:
         submodules: true
 
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v1.1
+
     - name: Setup vcpkg
       uses: lukka/run-vcpkg@v11
       with:
         vcpkgGitCommitId: 'f7423ee180c4b7f40d43402c2feb3859161ef625'
 
-    - name: Add MSBuild to PATH
-      uses: microsoft/setup-msbuild@v1.1
+    - name: Install vcpkg dependencies
+      run: |
+        vcpkg install boost:x64-windows opencv4:x64-windows zlib:x64-windows
+        vcpkg integrate install
+      shell: cmd
 
     - name: Restore NuGet packages
       run: nuget restore Blendy.sln
 
     - name: Build
-      run: msbuild Blendy.sln /p:Configuration=Release /p:Platform=x64 /p:VcpkgEnableManifest=true
+      run: msbuild Blendy.sln /p:Configuration=Release /p:Platform=x64

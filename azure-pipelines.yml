@@ -19,10 +19,10 @@ steps:
 - script: |
     git clone https://github.com/Microsoft/vcpkg.git
     cd vcpkg
-    bootstrap-vcpkg.bat
+    call bootstrap-vcpkg.bat
     vcpkg integrate install
-    vcpkg install opencv4:x64-windows zlib:x64-windows
-  displayName: 'Install vcpkg dependencies'
+    vcpkg install boost:x64-windows opencv4:x64-windows zlib:x64-windows
+  displayName: 'Install vcpkg dependencies (Boost, OpenCV, zlib)'
 
 - task: MSBuild@1
   displayName: 'Build solution'
