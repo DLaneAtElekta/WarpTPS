@@ -83,6 +83,14 @@ BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
 	// TODO: Modify the Window class or styles here by modifying
 	//  the CREATESTRUCT cs
 
+	// Set the default window size
+	cs.cx = 800;  // width in pixels
+	cs.cy = 900;  // height in pixels
+	
+	// Optionally, you can also set the initial position
+	// cs.x = 100;   // x position
+	// cs.y = 100;   // y position
+
 	return TRUE;
 }
 

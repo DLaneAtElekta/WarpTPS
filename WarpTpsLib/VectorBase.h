@@ -199,7 +199,7 @@ template<class TYPE>
 TYPE& CVectorBase<TYPE>::operator[](int nAtRow)
 {
 	// check dimensions
-	ASSERT(nAtRow >= 0 && nAtRow < GetDim());
+	assert(nAtRow >= 0 && nAtRow < GetDim());
 
 	return m_pElements[nAtRow];
 
@@ -215,7 +215,7 @@ template<class TYPE>
 const TYPE& CVectorBase<TYPE>::operator[](int nAtRow) const
 {
 	// check dimensions
-	ASSERT(nAtRow >= 0 && nAtRow < GetDim());
+	assert(nAtRow >= 0 && nAtRow < GetDim());
 
 	return m_pElements[nAtRow];
 

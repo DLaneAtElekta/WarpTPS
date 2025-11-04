@@ -33,12 +33,12 @@ public:
 	const CVectorD<3>& GetLandmark(int nIndex);
 
 	typedef std::tuple<CVectorD<3>::Point_t, CVectorD<3>::Point_t> LandmarkTuple_t;
-	const LandmarkTuple_t CTPSTransform::GetLandmarkTuple(int nIndex);
+	const LandmarkTuple_t GetLandmarkTuple(int nIndex);
 
 	template<int DATASET>
 	void SetLandmark(int nIndex, const CVectorD<3>& vLandmark);
 
-	void SetLandmarkTuple(int nIndex, CTPSTransform::LandmarkTuple_t);
+	void SetLandmarkTuple(int nIndex, LandmarkTuple_t);
 
 	// functions to add landmark points
 	int AddLandmark(const CVectorD<3>& vLandmark);
