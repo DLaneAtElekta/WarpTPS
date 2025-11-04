@@ -10,6 +10,14 @@ pool:
   vmImage: 'windows-latest'
 
 steps:
+- pwsh: |
+    $vsWhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+    $vsPath = & $vsWhere -latest -property installationPath
+    Write-Host "Visual Studio path: $vsPath"
+    $installer = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vs_installer.exe"
+    & $installer modify --installPath "$vsPath" --add Microsoft.VisualStudio.Component.VC.ATLMFC --quiet --wait
+  displayName: 'Install MFC libraries'
+
 - task: NuGetCommand@2
   displayName: 'Restore NuGet packages'
   inputs:
