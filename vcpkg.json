@@ -2,7 +2,7 @@
   "name": "warptps",
   "version-string": "1.0.0",
   "dependencies": [
-    "boost",
+    "libpng",
     "opencv4",
     "zlib"
   ]
