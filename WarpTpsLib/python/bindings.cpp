@@ -5,6 +5,40 @@
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>
 
+// Include necessary headers for WarpTpsLib (without Windows dependencies)
+#include <assert.h>
+
+// Define ASSERT macro for non-MFC builds
+#ifndef ASSERT
+#define ASSERT assert
+#endif
+
+// Define BOOL type for non-Windows platforms
+#ifndef BOOL
+typedef int BOOL;
+#define TRUE 1
+#define FALSE 0
+#endif
+
+// Define BYTE and UINT types
+#ifndef BYTE
+typedef unsigned char BYTE;
+typedef BYTE * LPBYTE;
+typedef unsigned int  UINT;
+#endif
+
+// Include boost geometry and ublas headers
+#include <boost/geometry.hpp>
+namespace bg = boost::geometry;
+
+#include <boost/numeric/ublas/matrix.hpp>
+#include <boost/numeric/ublas/vector.hpp>
+#include <boost/numeric/ublas/vector_proxy.hpp>
+#include <boost/numeric/ublas/triangular.hpp>
+#include <boost/numeric/ublas/lu.hpp>
+#include <boost/numeric/ublas/io.hpp>
+namespace ublas = boost::numeric::ublas;
+
 // WarpTpsLib headers
 #include "../TPSTransform.h"
 #include "../VectorD.h"
