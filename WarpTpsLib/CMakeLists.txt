@@ -22,11 +22,13 @@ set(HEADERS
     VectorD.h
 )
 
-# Resource files
-set(RESOURCES
-    WarpTpsLib.rc
-    res/WarpTpsLib.rc2
-)
+# Resource files (Windows only)
+if(WIN32)
+    set(RESOURCES
+        WarpTpsLib.rc
+        res/WarpTpsLib.rc2
+    )
+endif()
 
 # Create library (static by default, shared if BUILD_SHARED_LIBS is ON)
 if(BUILD_SHARED_LIBS)

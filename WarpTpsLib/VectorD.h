@@ -7,6 +7,9 @@
 
 #pragma once
 
+// standard library includes
+#include <algorithm>
+
 // math utilities
 #include "MathUtil.h"
 
@@ -78,7 +81,7 @@ CVectorD<DIM, TYPE>::CVectorD()
 {
 	// set the elements pointer to the static array 
 	//		and initialize the dimension
-	SetElements(DIM, const_cast<TYPE*>(&this->point().get<0>()), FALSE);
+	this->SetElements(DIM, const_cast<TYPE*>(&this->point().template get<0>()), FALSE);
 
 	// clear to all zeros
 	memset((*this), 0, DIM * sizeof(TYPE));
@@ -96,7 +99,7 @@ CVectorD<DIM, TYPE>::CVectorD(TYPE x)
 {
 	// set the elements pointer to the static array 
 	//		and initialize the dimension
-	SetElements(DIM, const_cast<TYPE*>(&this->point().get<0>()), FALSE);
+	this->SetElements(DIM, const_cast<TYPE*>(&this->point().template get<0>()), FALSE);
 
 	// set the given elements
 	(*this)[0] = x;
@@ -120,7 +123,7 @@ CVectorD<DIM, TYPE>::CVectorD(TYPE x, TYPE y)
 {
 	// set the elements pointer to the static array 
 	//		and initialize the dimension
-	SetElements(DIM, const_cast<TYPE*>(&this->point().get<0>()), FALSE);
+	this->SetElements(DIM, const_cast<TYPE*>(&this->point().template get<0>()), FALSE);
 
 	// set the given elements
 	(*this)[0] = x;
@@ -145,7 +148,7 @@ CVectorD<DIM, TYPE>::CVectorD(TYPE x, TYPE y, TYPE z)
 {
 	// set the elements pointer to the static array 
 	//		and initialize the dimension
-	SetElements(DIM, const_cast<TYPE*>(&this->point().get<0>()), FALSE);
+	this->SetElements(DIM, const_cast<TYPE*>(&this->point().template get<0>()), FALSE);
 
 	// set the given elements
 	(*this)[0] = x;
@@ -171,7 +174,7 @@ CVectorD<DIM, TYPE>::CVectorD(TYPE x, TYPE y, TYPE z, TYPE w)
 { 
 	// set the elements pointer to the static array 
 	//		and initialize the dimension
-	SetElements(DIM, const_cast<TYPE*>(&this->point().get<0>()), FALSE);
+	this->SetElements(DIM, const_cast<TYPE*>(&this->point().template get<0>()), FALSE);
 
 	// set the given elements
 	(*this)[0] = x;
@@ -198,7 +201,7 @@ CVectorD<DIM, TYPE>::CVectorD(const CVectorD<DIM, TYPE>& vFrom)
 {
 	// set the elements pointer to the static array 
 	//		and initialize the dimension
-	SetElements(DIM, const_cast<TYPE*>(&this->point().get<0>()), FALSE);
+	this->SetElements(DIM, const_cast<TYPE*>(&this->point().template get<0>()), FALSE);
 
 	// assign to copy 
 	(*this) = vFrom;
@@ -216,10 +219,10 @@ CVectorD<DIM, TYPE>::CVectorD(const CVectorBase<TYPE>& vFrom)
 {
 	// set the elements pointer to the static array 
 	//		and initialize the dimension
-	SetElements(DIM, const_cast<TYPE*>(&this->point().get<0>()), FALSE);
+	this->SetElements(DIM, const_cast<TYPE*>(&this->point().template get<0>()), FALSE);
 
 	// copy the elements
-	memcpy((*this), vFrom, __min(this->GetDim(), vFrom.GetDim()) * sizeof(TYPE));
+	memcpy((*this), vFrom, std::min(this->GetDim(), vFrom.GetDim()) * sizeof(TYPE));
 
 	// set remainder of elements to 0
 	if (this->GetDim() > vFrom.GetDim())
