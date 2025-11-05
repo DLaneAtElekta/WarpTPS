@@ -1,87 +1,109 @@
-# WarpTpsLib - Core TPS Transform Library
-project(WarpTpsLib VERSION 1.0.0)
+cmake_minimum_required(VERSION 3.15)
+project(WarpTpsLib VERSION 1.0.0 LANGUAGES CXX)
 
-# Source files
-set(SOURCES
+# C++ Standard
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+# Options
+option(USE_MFC "Build with MFC support (Windows only)" OFF)
+option(BUILD_SHARED_LIBS "Build shared library instead of static" OFF)
+
+# Find Boost
+find_package(Boost 1.70 REQUIRED COMPONENTS system)
+
+# Library sources - cross-platform core
+set(LIBRARY_SOURCES
     ModelObject.cpp
-    pch.cpp
     TPSTransform.cpp
 )
 
-# Header files
-set(HEADERS
-    framework.h
-    MathUtil.h
+# Library headers - cross-platform core
+set(LIBRARY_HEADERS
     ModelObject.h
-    pch.h
-    Resource.h
-    targetver.h
     TPSTransform.h
-    UtilMacros.h
-    VectorBase.h
     VectorD.h
+    VectorBase.h
+    MathUtil.h
+    UtilMacros.h
+    framework.h
 )
 
-# Resource files
-set(RESOURCES
-    WarpTpsLib.rc
-    res/WarpTpsLib.rc2
-)
-
-# Create library (static by default, shared if BUILD_SHARED_LIBS is ON)
-if(BUILD_SHARED_LIBS)
-    add_library(WarpTpsLib SHARED ${SOURCES} ${HEADERS} ${RESOURCES})
-
-    # Add DLL export definitions
-    target_compile_definitions(WarpTpsLib PRIVATE
-        WARPTPSLIB_EXPORTS
-        _USRDLL
+# Add MFC-specific files if enabled
+if(USE_MFC AND MSVC)
+    list(APPEND LIBRARY_SOURCES pch.cpp)
+    list(APPEND LIBRARY_HEADERS
+        pch.h
+        Resource.h
+        targetver.h
     )
+    set(RESOURCES
+        WarpTpsLib.rc
+        res/WarpTpsLib.rc2
+    )
+endif()
 
-    # Use module definition file for exports
-    if(MSVC)
+# Create library target
+if(BUILD_SHARED_LIBS)
+    if(USE_MFC AND MSVC)
+        add_library(WarpTpsLib SHARED ${LIBRARY_SOURCES} ${LIBRARY_HEADERS} ${RESOURCES})
+        
+        # Add DLL export definitions
+        target_compile_definitions(WarpTpsLib PRIVATE
+            WARPTPSLIB_EXPORTS
+            _USRDLL
+        )
+        
+        # Use module definition file for exports
         set_target_properties(WarpTpsLib PROPERTIES
             LINK_FLAGS "/DEF:${CMAKE_CURRENT_SOURCE_DIR}/WarpTpsLib.def"
         )
+    else()
+        add_library(WarpTpsLib SHARED ${LIBRARY_SOURCES} ${LIBRARY_HEADERS})
     endif()
 else()
-    add_library(WarpTpsLib STATIC ${SOURCES} ${HEADERS})
+    if(USE_MFC AND MSVC)
+        add_library(WarpTpsLib STATIC ${LIBRARY_SOURCES} ${LIBRARY_HEADERS} ${RESOURCES})
+    else()
+        add_library(WarpTpsLib STATIC ${LIBRARY_SOURCES} ${LIBRARY_HEADERS})
+    endif()
 endif()
 
-# Set precompiled header
-if(MSVC)
+# Set precompiled header for MFC builds
+if(USE_MFC AND MSVC)
     target_precompile_headers(WarpTpsLib PRIVATE pch.h)
 endif()
 
 # Include directories
-target_include_directories(WarpTpsLib
-    PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}
-    PRIVATE
-        ${CMAKE_CURRENT_BINARY_DIR}
+target_include_directories(WarpTpsLib PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:include>
 )
 
 # Link Boost
-target_link_libraries(WarpTpsLib
-    PUBLIC
-        Boost::headers
-)
+target_link_libraries(WarpTpsLib PUBLIC Boost::headers)
 
-# Compiler-specific settings
+# Compiler options
 if(MSVC)
-    target_compile_definitions(WarpTpsLib PRIVATE
-        WIN32
-        _WINDOWS
-        $<$<CONFIG:Debug>:_DEBUG>
-        $<$<CONFIG:Release>:NDEBUG>
-    )
-
-    # Set conformance mode to false to match vcxproj
-    target_compile_options(WarpTpsLib PRIVATE
-        /W3
-        $<$<CONFIG:Release>:/O2>
-        /permissive  # Disable conformance mode
-    )
+    target_compile_options(WarpTpsLib PRIVATE /W3)
+    
+    # MFC-specific compiler settings
+    if(USE_MFC)
+        target_compile_definitions(WarpTpsLib PRIVATE
+            WIN32
+            _WINDOWS
+            $<$<CONFIG:Debug>:_DEBUG>
+            $<$<CONFIG:Release>:NDEBUG>
+        )
+        
+        target_compile_options(WarpTpsLib PRIVATE
+            $<$<CONFIG:Release>:/O2>
+            /permissive  # Disable conformance mode for MFC compatibility
+        )
+    endif()
+else()
+    target_compile_options(WarpTpsLib PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
 # Set target properties
@@ -90,15 +112,24 @@ set_target_properties(WarpTpsLib PROPERTIES
     VERSION ${PROJECT_VERSION}
 )
 
-# Install rules
+# Installation rules
 install(TARGETS WarpTpsLib
-    ARCHIVE DESTINATION lib
+    EXPORT WarpTpsLibTargets
     LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
     RUNTIME DESTINATION bin
+    INCLUDES DESTINATION include
 )
 
-install(FILES ${HEADERS}
+install(FILES ${LIBRARY_HEADERS}
     DESTINATION include/WarpTpsLib
+)
+
+# Export cmake config
+install(EXPORT WarpTpsLibTargets
+    FILE WarpTpsLibTargets.cmake
+    NAMESPACE WarpTps::
+    DESTINATION lib/cmake/WarpTpsLib
 )
 
 # ============================================================================
