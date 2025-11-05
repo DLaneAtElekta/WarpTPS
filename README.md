@@ -17,8 +17,54 @@ WarpTPS is a landmark-based image deformation tool that lets you interactively w
 - **Multiple Views** - See source, destination, warped, and blended images simultaneously
 - **Web Interface** - Modern React frontend with HTTP server backend
 - **High Performance** - Presampled displacement fields for fast rendering
+- **Cross-Platform Support** - Core library (WarpTpsLib) and Python bindings work on Windows, Linux, and macOS
+- **Python Bindings** - Use TPS transformations from Python with NumPy integration
+
+## Platform Support
+
+| Component | Windows | Linux | macOS |
+|-----------|---------|-------|-------|
+| WarpTpsLib (Core Library) | ✅ | ✅ | ✅ |
+| Python Bindings | ✅ | ✅ | ✅ |
+| WarpTPS MFC GUI | ✅ | ❌ | ❌ |
+| Web Interface | ✅ | ✅* | ✅* |
+
+*Web interface components may require additional setup (see [CMAKE_BUILD.md](CMAKE_BUILD.md))
 
 ## Quick Start
+
+### Python (Cross-Platform)
+
+For Linux/macOS users or those who want to use WarpTPS from Python:
+
+**Prerequisites:** Python 3.8+, CMake, C++ compiler, Boost, pybind11  
+(See [CMAKE_BUILD.md](CMAKE_BUILD.md) for detailed dependency installation)
+
+```bash
+# Install from source
+pip install -e .
+
+# Or see PYTHON_README.md for detailed instructions
+```
+
+Example usage:
+```python
+import warptps
+import numpy as np
+
+# Create a TPS transform
+tps = warptps.TPSTransform()
+
+# Add landmark pairs
+tps.add_landmark_tuple((100, 100), (110, 110))
+tps.add_landmark_tuple((200, 100), (210, 120))
+
+# Warp an image
+img = np.zeros((300, 300, 3), dtype=np.uint8)
+warped = tps.warp(img, percent=1.0)
+```
+
+### Windows Desktop Application
 
 ### Prerequisites
 
@@ -377,9 +423,14 @@ Copyright (c) 2015, Derek. All rights reserved.
 
 ### Platform Support
 
-- **Primary Platform**: Windows 10/11 (x64)
+- **Core Library (WarpTpsLib)**: Windows, Linux, macOS
+- **Python Bindings**: Windows, Linux, macOS
+- **Desktop GUI**: Windows 10/11 (x64) - Uses MFC
 - **Web Interface**: Cross-platform (any modern browser)
-- **Compiler**: MSVC 2022 (v143 toolset)
+- **Compiler Support**: 
+  - Windows: MSVC 2019/2022 (v142/v143 toolset)
+  - Linux: GCC 7+, Clang 5+
+  - macOS: AppleClang (Xcode Command Line Tools)
 
 ## Troubleshooting
 
@@ -428,9 +479,10 @@ Potential future enhancements:
 - [ ] GPU acceleration for real-time processing
 - [ ] Additional image format support
 - [ ] Batch processing capabilities
-- [ ] Python bindings for the core library
+- [x] **Python bindings for the core library** - ✅ Completed! See [PYTHON_README.md](PYTHON_README.md)
+- [x] **Cross-platform core library support** - ✅ WarpTpsLib now works on Linux and macOS
 - [ ] Enhanced web interface with more interactive controls
 
 ---
 
-**Note**: This project demonstrates both classic Windows application development (MFC) and modern web technologies (React), making it a comprehensive example of hybrid application architecture.
+**Note**: This project demonstrates both classic Windows application development (MFC) and modern web technologies (React), combined with a cross-platform C++ library and Python bindings. It showcases hybrid application architecture across desktop, web, and scripting environments.

@@ -2,6 +2,23 @@
 
 This document describes how to build WarpTPS using CMake.
 
+## Platform Support
+
+### Component Availability by Platform
+
+| Component | Windows | Linux | macOS |
+|-----------|---------|-------|-------|
+| WarpTpsLib (Core Library) | ✅ | ✅ | ✅ |
+| Python Bindings | ✅ | ✅ | ✅ |
+| WarpWebServer | ✅ | ⚠️* | ⚠️* |
+| FeatureExtractionConsole | ✅ | ✅** | ✅** |
+| WarpTPS MFC GUI | ✅ | ❌ | ❌ |
+| Unit Tests | ✅ | ❌*** | ❌*** |
+
+*WarpWebServer requires libpng and zlib (not currently configured for Linux/macOS)  
+**FeatureExtractionConsole requires OpenCV  
+***Unit tests use Visual Studio native test framework (MSVC only)
+
 ## Prerequisites
 
 ### Required
@@ -87,16 +104,170 @@ cmake --build . --config Release
 
 ## Linux/macOS Build
 
+WarpTpsLib and its Python bindings are now fully supported on Linux and macOS.
+
+### Prerequisites
+
+**All Platforms:**
+- CMake 3.15 or higher
+- C++17 compatible compiler (GCC 7+, Clang 5+, or AppleClang)
+- Boost 1.70 or higher
+
+**For Python Bindings:**
+- Python 3.8 or higher
+- pybind11 2.13 or higher
+- NumPy 1.20 or higher
+
+**Note:** Consider using a virtual environment for Python development:
+```bash
+python3 -m venv venv
+source venv/bin/activate  # Linux/macOS
+# or
+venv\Scripts\activate  # Windows
+```
+
+### Installing Dependencies
+
+#### Ubuntu/Debian
+```bash
+sudo apt-get update
+sudo apt-get install -y \
+    cmake \
+    g++ \
+    libboost-dev \
+    libboost-system-dev \
+    libboost-date-time-dev \
+    libboost-regex-dev \
+    python3-dev \
+    python3-pip
+
+# Install Python dependencies
+pip3 install pybind11 numpy scikit-build-core
+```
+
+#### macOS (Homebrew)
+```bash
+brew install cmake boost python@3.12
+
+# Install Python dependencies
+pip3 install pybind11 numpy scikit-build-core
+```
+
+#### Fedora/RHEL
+```bash
+sudo dnf install -y \
+    cmake \
+    gcc-c++ \
+    boost-devel \
+    python3-devel \
+    python3-pip
+
+# Install Python dependencies
+pip3 install pybind11 numpy scikit-build-core
+```
+
+### Building WarpTpsLib
+
 ```bash
 # Create build directory
 mkdir build
 cd build
 
-# Configure (will skip MFC application)
+# Configure (will skip MFC application and other Windows-only components)
 cmake .. -DCMAKE_BUILD_TYPE=Release
 
-# Build
-cmake --build . -j$(nproc)
+# Build (using bash/zsh shell syntax for parallel builds)
+cmake --build . -j$(nproc)  # Linux
+cmake --build . -j$(sysctl -n hw.ncpu)  # macOS
+# Or specify a number directly: cmake --build . -j4
+```
+
+The build will produce:
+- `build/lib/libWarpTpsLib.a` - Static library
+
+### Building with Python Bindings
+
+To build the Python bindings, you need to specify the pybind11 path:
+
+```bash
+# Find pybind11 CMake directory
+PYBIND11_DIR=$(python3 -m pybind11 --cmakedir)
+
+# Create build directory
+mkdir build
+cd build
+
+# Configure with Python bindings enabled
+cmake .. \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DBUILD_PYTHON_BINDINGS=ON \
+    -Dpybind11_DIR=$PYBIND11_DIR
+
+# Build (using bash/zsh shell syntax for parallel builds)
+cmake --build . -j$(nproc)  # Linux
+cmake --build . -j$(sysctl -n hw.ncpu)  # macOS
+# Or specify a number directly: cmake --build . -j4
+```
+
+This will produce:
+- `build/lib/libWarpTpsLib.a` - Static library
+- `build/lib/_warptps_core.*.so` - Python extension module (Linux)
+- `build/lib/_warptps_core.*.dylib` - Python extension module (macOS)
+
+### Installing Python Package
+
+#### Option 1: Install from Source (Development)
+
+```bash
+# Install in development mode (editable install)
+pip3 install -e .
+```
+
+This uses scikit-build-core to automatically configure CMake and build the extension.
+
+#### Option 2: Build Wheel
+
+```bash
+# Build a wheel package
+pip3 install build
+python3 -m build
+
+# Install the wheel
+pip3 install dist/warptps-1.0.0-*.whl
+```
+
+#### Option 3: Manual Install (if using CMake directly)
+
+```bash
+# After building with CMake (as shown above), copy the module
+cp build/lib/_warptps_core.*.so python/warptps/  # Linux
+cp build/lib/_warptps_core.*.dylib python/warptps/  # macOS
+
+# Add to Python path or install
+export PYTHONPATH=/path/to/WarpTPS/python:$PYTHONPATH
+```
+
+### Testing Python Bindings
+
+```bash
+python3 -c "
+import warptps
+import numpy as np
+
+# Create a TPS transform
+tps = warptps.TPSTransform()
+print(f'Version: {warptps.version()}')
+
+# Add landmarks
+tps.add_landmark_tuple((100, 100), (110, 110))
+tps.add_landmark_tuple((200, 100), (210, 120))
+tps.add_landmark_tuple((150, 200), (155, 205))
+
+# Warp an image
+img = np.zeros((300, 300, 3), dtype=np.uint8)
+warped = tps.warp(img, percent=1.0)
+print(f'Success! Warped image shape: {warped.shape}')
+"
 ```
 
 ## Running Tests

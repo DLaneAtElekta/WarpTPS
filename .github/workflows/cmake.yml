@@ -75,3 +75,78 @@ jobs:
         } else {
           Write-Host "Test DLL not found: $testDll"
         }
+
+  build-linux:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        build_type: [Debug, Release]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          cmake \
+          g++ \
+          libboost-dev \
+          libboost-system-dev \
+          libboost-date-time-dev \
+          libboost-regex-dev \
+          python3-dev \
+          python3-pip
+
+    - name: Install Python dependencies
+      run: |
+        pip3 install pybind11 numpy scikit-build-core
+
+    - name: Configure CMake
+      run: |
+        PYBIND11_DIR=$(python3 -m pybind11 --cmakedir)
+        cmake -B ${{github.workspace}}/build \
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+          -DBUILD_PYTHON_BINDINGS=ON \
+          -Dpybind11_DIR=$PYBIND11_DIR
+
+    - name: Build
+      run: cmake --build ${{github.workspace}}/build -j$(nproc)
+
+    - name: List build artifacts
+      run: |
+        echo "Build artifacts:"
+        find ${{github.workspace}}/build/lib -type f
+
+    - name: Test Python bindings
+      run: |
+        cp ${{github.workspace}}/build/lib/_warptps_core*.so ${{github.workspace}}/python/warptps/
+        cd ${{github.workspace}}
+        python3 -c "
+        import sys
+        sys.path.insert(0, 'python')
+        import warptps
+        import numpy as np
+        print('Testing WarpTPS Python bindings...')
+        print(f'Version: {warptps.version()}')
+        tps = warptps.TPSTransform()
+        tps.add_landmark_tuple((100, 100), (110, 110))
+        tps.add_landmark_tuple((200, 100), (210, 120))
+        print(f'Landmarks: {tps.get_landmark_count()}')
+        img = np.zeros((300, 300, 3), dtype=np.uint8)
+        warped = tps.warp(img, percent=1.0)
+        print(f'Warped image shape: {warped.shape}')
+        print('✓ All tests passed!')
+        "
+
+    - name: Upload Linux artifacts
+      if: matrix.build_type == 'Release'
+      uses: actions/upload-artifact@v4
+      with:
+        name: WarpTpsLib-Linux-${{ matrix.build_type }}
+        path: |
+          ${{github.workspace}}/build/lib/libWarpTpsLib.a
+          ${{github.workspace}}/build/lib/_warptps_core*.so
+        retention-days: 30
