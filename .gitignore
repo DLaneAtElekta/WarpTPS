@@ -163,6 +163,11 @@ PublishScripts/
 *.nuget.props
 *.nuget.targets
 
+# vcpkg
+vcpkg_installed/
+.vcpkg-root
+vcpkg.json.user
+
 # Microsoft Azure Build Output
 csx/
 *.build.csdef
@@ -253,6 +258,9 @@ paket-files/
 .idea/
 *.sln.iml
 
+# Claude Code local settings
+.claude/settings.local.json
+
 # CodeRush
 .cr/
 
@@ -260,6 +268,32 @@ paket-files/
 __pycache__/
 *.pyc
 
+# Python package build artifacts
+*.egg-info/
+dist/
+*.egg
+*.whl
+.eggs/
+build/
+_skbuild/
+*.so
+*.pyd
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+
+# Pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
 
 # https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
@@ -274,6 +308,19 @@ __pycache__/
 # production
 /build
 
+# CMake build artifacts
+build/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+CTestTestfile.cmake
+install_manifest.txt
+*.cmake
+!cmake/FindBoostNuGet.cmake
+!CMakeLists.txt
+CMakeSettings.json
+.cmake/
+
 # misc
 .DS_Store
 .env.local
@@ -284,3 +331,7 @@ __pycache__/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+nuget.exe
+nul
+build/
+packages/

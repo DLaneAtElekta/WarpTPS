@@ -1,5 +1,72 @@
 # WarpTPS
 
+**Interactive image warping and morphing using Thin Plate Spline transformations**
+
+WarpTPS is a landmark-based image deformation tool that lets you interactively warp, morph, and blend images using [Thin Plate Spline (TPS)](http://en.wikipedia.org/wiki/Thin_plate_spline) interpolation. Perfect for image morphing, medical image registration visualization, and understanding geometric transformations.
+
+## Demo Videos
+
+- [Grumpy to Hedgy Morph](https://youtu.be/ggDMs3GozSU?t=2s) - Face morphing demonstration
+- [MR Slice Registration](https://youtu.be/1w0Gk1YRcuI?t=7s) - Medical imaging application
+
+## Features
+
+- **Interactive Landmark Placement** - Click to add control points, drag to adjust
+- **Real-time Warping** - See transformations update as you edit landmarks
+- **Bidirectional Morphing** - Forward and inverse transforms with smooth blending
+- **Multiple Views** - See source, destination, warped, and blended images simultaneously
+- **Web Interface** - Modern React frontend with HTTP server backend
+- **High Performance** - Presampled displacement fields for fast rendering
+
+## Quick Start
+
+### Prerequisites
+
+- Visual Studio 2019 or 2022
+- Windows SDK
+- Boost 1.87.0 (automatically installed via NuGet)
+
+### Building the Desktop Application
+
+```batch
+# Build all configurations
+build_all.bat
+
+# Or build specific configuration
+msbuild Blendy.sln /p:Configuration=Release /p:Platform=x86
+```
+
+### Running the Application
+
+1. Open `Blendy.sln` in Visual Studio
+2. Build and run the **WarpTPS** project
+3. Load source and destination images
+4. Click to place landmark pairs on corresponding features
+5. Use the slider to morph between images
+
+### Web Interface (Optional)
+Videos:
+* [Grumpy to Hedgy](https://youtu.be/ggDMs3GozSU?t=2s)
+* [MR Slices](https://youtu.be/1w0Gk1YRcuI?t=7s)
+
+## Building
+
+### CMake Build (Recommended)
+
+WarpTPS uses CMake for building with Visual Studio 2022:
+
+```bash
+# Restore NuGet dependencies
+nuget restore packages.config -PackagesDirectory packages
+
+# Configure and build
+mkdir build
+cd build
+cmake .. -G "Visual Studio 17 2022" -A x64 -DUSE_MFC=ON
+cmake --build . --config Release
+```
+
+For detailed CMake build instructions, see [CMAKE_BUILD.md](CMAKE_BUILD.md).
 **An interactive Thin Plate Spline (TPS) transformation visualization tool**
 
 WarpTPS is a comprehensive C++ application that implements and visualizes [Thin Plate Spline](http://en.wikipedia.org/wiki/Thin_plate_spline) transformations, a powerful technique for image warping and morphing based on control point correspondence. The project includes both a Windows desktop application with MFC GUI and a modern web-based interface built with React.
@@ -34,21 +101,38 @@ WarpTPS/
 │   ├── VectorD.h            # Template-based vector mathematics
 │   ├── ModelObject.h        # Transformation model management
 │   └── MathUtil.h           # Mathematical utility functions
-├── WarpWebServer/           # C++ HTTP server using Boost.Beast
+├── python/                   # Python bindings (pybind11)
+│   └── warptps/             # Python package
+│       └── __init__.py      # Python API wrappers
+├── WarpApiServer/           # NEW: FastAPI server (replaces WarpWebServer)
+│   ├── main.py              # FastAPI application with TPS endpoints
+│   ├── requirements.txt     # Python dependencies
+│   ├── start_server.sh      # Linux/Mac startup script
+│   └── start_server.bat     # Windows startup script
+├── WarpWebServer/           # LEGACY: C++ HTTP server (deprecated)
 │   ├── server.cpp           # HTTP server implementation
 │   ├── request_handler.cpp  # Request routing and handling
 │   └── warp_web_server.cpp  # Server entry point
 ├── image-app/               # React-based web interface
 │   ├── src/                 # React components and logic
+│   │   └── Container/
+│   │       ├── TPSWarping.jsx    # NEW: TPS warping component
+│   │       └── ImageOps.jsx      # Cloudinary image filters
 │   ├── public/              # Static assets
 │   └── package.json         # Node.js dependencies
 ├── UnitTest1/               # Unit tests for core functionality
 ├── TestData/                # Sample images and test data
+├── tests/                   # Python binding tests
+│   └── test_basic.py        # pytest tests for Python API
 ├── WarpTpsPackage/          # MSIX packaging configuration
 ├── FeatureExtractionConsole/# Command-line feature extraction tool
-├── Doxyfile                 # Doxygen documentation configuration
-├── Blendy.sln              # Main Visual Studio solution
-└── build_all.bat           # Batch script to build all components
+├── cmake/                    # CMake modules
+│   └── FindBoostNuGet.cmake  # Custom Boost finder for NuGet packages
+├── CMakeLists.txt            # Root CMake configuration
+├── pyproject.toml            # Python package configuration
+├── packages.config           # NuGet package dependencies
+├── Doxyfile                  # Doxygen documentation configuration
+└── WarpTPS-Legacy.sln        # Legacy Visual Studio solution (reference only)
 ```
 
 ## Prerequisites
@@ -69,34 +153,140 @@ WarpTPS/
 - **Node.js**: v14.0 or later
 - **npm**: v6.0 or later (comes with Node.js)
 
+### For Python API Server (New!)
+
+- **Python**: 3.8 or later
+- **pip**: Latest version
+- **Build tools**: CMake, C++ compiler (for building Python bindings)
+
 ## Building the Project
 
-### Building Everything
+### Building Python Bindings (Recommended for Web Interface)
 
-Use the provided batch script to build all components:
+The project now includes Python bindings that enable a modern FastAPI server:
 
-```batch
-build_all.bat
+```bash
+# Install Python bindings
+pip install -e .
+
+# This will:
+# - Compile C++ code with pybind11
+# - Install the 'warptps' Python package
+# - Make TPS transformations available in Python
 ```
 
-### Building with Visual Studio
+### Starting the FastAPI Server
 
-1. Open `Blendy.sln` in Visual Studio 2022
-2. Select your desired configuration (Debug or Release)
-3. Select platform (x64 recommended)
-4. Build Solution (Ctrl+Shift+B)
+```bash
+cd WarpApiServer
+pip install -r requirements.txt
+python main.py
 
-### Building with MSBuild (Command Line)
-
-```batch
-msbuild Blendy.sln /p:Configuration=Release /p:Platform=x64
+# Or use the convenience scripts:
+# Linux/Mac: ./start_server.sh
+# Windows: start_server.bat
 ```
+
+The server will start on http://localhost:8000 with interactive API docs at http://localhost:8000/docs
+
+### Building with CMake and Visual Studio
+
+1. Restore NuGet packages:
+   ```batch
+   nuget restore packages.config -PackagesDirectory packages
+   ```
+
+2. Configure CMake:
+   ```batch
+   mkdir build
+   cd build
+   cmake .. -G "Visual Studio 17 2022" -A x64 -DUSE_MFC=ON
+   ```
+
+3. Build with CMake:
+   ```batch
+   cmake --build . --config Release
+   ```
+
+Or open `build/WarpTPS.sln` in Visual Studio 2022 and build from the IDE.
 
 ### Building the Web Interface
+
+The React app now features interactive TPS warping with landmark placement:
 
 ```bash
 cd image-app
 npm install
+npm start
+```
+
+The React app will open at `http://localhost:3000`
+
+**Note**: Make sure the FastAPI server (WarpApiServer) is running before using the TPS warping features.
+
+## How It Works
+
+Thin Plate Spline (TPS) interpolation creates smooth deformation fields from sparse landmark pairs. The algorithm:
+
+1. You place corresponding landmarks on source and destination images
+2. TPS computes a smooth interpolation minimizing "bending energy"
+3. Every pixel is warped according to the computed deformation field
+4. Morphing blends the forward and inverse warped images
+
+**Mathematical basis:** TPS uses radial basis functions `U(r) = r² log(r)` to create smooth transformations that exactly match at landmarks while minimizing curvature elsewhere.
+
+## Architecture
+
+- **WarpTpsLib** - Core C++ library implementing TPS mathematics (header-only templates)
+- **WarpTPS** - MFC desktop application with interactive UI
+- **Python Bindings** - pybind11-based Python API for TPS transformations
+- **WarpApiServer** - Modern FastAPI server providing RESTful TPS endpoints (replaces WarpWebServer)
+- **WarpWebServer** - (Legacy) C++ HTTP server (Boost.Asio) - deprecated in favor of WarpApiServer
+- **image-app** - React web frontend with Material-UI, featuring interactive TPS warping
+
+## Use Cases
+
+- **Image Morphing** - Create smooth transitions between faces, objects, or scenes
+- **Medical Imaging** - Visualize deformable registration between scans
+- **Computer Graphics** - Prototype non-rigid transformations
+- **Education** - Understand TPS and deformation field mathematics
+
+## Technology Stack
+
+- **C++** with MFC (desktop UI)
+- **Boost** - Geometry, uBLAS (linear algebra), Asio (networking)
+- **React** - Modern web interface
+- **libpng** - Image I/O
+
+## Testing
+
+```batch
+# Run unit tests
+vstest.console.exe Release\WarpTpsLib.UnitTest.dll
+```
+
+## Documentation
+
+For detailed build instructions, architecture documentation, and development guidance, see [CLAUDE.md](CLAUDE.md).
+
+API documentation can be generated with:
+```bash
+doxygen Doxyfile
+```
+
+## Contributing
+
+Contributions welcome! The codebase uses modern C++ templates and MFC patterns. See [CLAUDE.md](CLAUDE.md) for architecture details and common development tasks.
+
+## License
+
+[Add your license here]
+
+## Acknowledgments
+
+- Thin Plate Spline algorithm based on Bookstein's landmark-based morphometrics
+- Uses Boost libraries for mathematical operations
+- Medical imaging applications inspired by deformable registration research
 npm run build
 ```
 
@@ -287,13 +477,18 @@ For bugs, feature requests, or questions:
 
 ## Roadmap
 
+Completed:
+- [x] Python bindings for the core library
+- [x] Enhanced web interface with interactive landmark placement
+- [x] RESTful API server with FastAPI
+
 Potential future enhancements:
 - [ ] 3D TPS transformations
 - [ ] GPU acceleration for real-time processing
 - [ ] Additional image format support
 - [ ] Batch processing capabilities
-- [ ] Python bindings for the core library
-- [ ] Enhanced web interface with more interactive controls
+- [ ] Real-time morphing video generation
+- [ ] Mobile-responsive web interface
 
 ---
 
