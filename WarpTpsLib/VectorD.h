@@ -245,7 +245,7 @@ CVectorD<DIM, TYPE>::CVectorD(const CPoint& pt)
 {
 	// set the elements pointer to the static array 
 	//		and initialize the dimension
-	SetElements(DIM, const_cast<TYPE*>(&this->point().get<0>()), FALSE);
+	this->SetElements(DIM, const_cast<TYPE*>(&this->point().template get<0>()), FALSE);
 
 	// set the given elements
 	(*this)[0] = pt.x;

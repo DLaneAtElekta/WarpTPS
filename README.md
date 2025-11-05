@@ -37,6 +37,9 @@ WarpTPS is a landmark-based image deformation tool that lets you interactively w
 
 For Linux/macOS users or those who want to use WarpTPS from Python:
 
+**Prerequisites:** Python 3.8+, CMake, C++ compiler, Boost, pybind11  
+(See [CMAKE_BUILD.md](CMAKE_BUILD.md) for detailed dependency installation)
+
 ```bash
 # Install from source
 pip install -e .

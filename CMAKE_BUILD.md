@@ -118,6 +118,14 @@ WarpTpsLib and its Python bindings are now fully supported on Linux and macOS.
 - pybind11 2.13 or higher
 - NumPy 1.20 or higher
 
+**Note:** Consider using a virtual environment for Python development:
+```bash
+python3 -m venv venv
+source venv/bin/activate  # Linux/macOS
+# or
+venv\Scripts\activate  # Windows
+```
+
 ### Installing Dependencies
 
 #### Ubuntu/Debian
@@ -258,20 +266,6 @@ img = np.zeros((300, 300, 3), dtype=np.uint8)
 warped = tps.warp(img, percent=1.0)
 print(f'Success! Warped image shape: {warped.shape}')
 "
-```
-
-## Linux/macOS Build
-
-```bash
-# Create build directory
-mkdir build
-cd build
-
-# Configure (will skip MFC application)
-cmake .. -DCMAKE_BUILD_TYPE=Release
-
-# Build
-cmake --build . -j$(nproc)
 ```
 
 ## Running Tests
