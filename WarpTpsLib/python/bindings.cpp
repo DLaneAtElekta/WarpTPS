@@ -20,11 +20,15 @@ typedef int BOOL;
 #define FALSE 0
 #endif
 
-// Define BYTE and UINT types
+// Define BYTE type
 #ifndef BYTE
 typedef unsigned char BYTE;
 typedef BYTE * LPBYTE;
-typedef unsigned int  UINT;
+#endif
+
+// Define UINT type
+#ifndef UINT
+typedef unsigned int UINT;
 #endif
 
 // Include boost geometry and ublas headers

@@ -176,9 +176,10 @@ cd build
 # Configure (will skip MFC application and other Windows-only components)
 cmake .. -DCMAKE_BUILD_TYPE=Release
 
-# Build
+# Build (using bash/zsh shell syntax for parallel builds)
 cmake --build . -j$(nproc)  # Linux
 cmake --build . -j$(sysctl -n hw.ncpu)  # macOS
+# Or specify a number directly: cmake --build . -j4
 ```
 
 The build will produce:
@@ -202,9 +203,10 @@ cmake .. \
     -DBUILD_PYTHON_BINDINGS=ON \
     -Dpybind11_DIR=$PYBIND11_DIR
 
-# Build
+# Build (using bash/zsh shell syntax for parallel builds)
 cmake --build . -j$(nproc)  # Linux
 cmake --build . -j$(sysctl -n hw.ncpu)  # macOS
+# Or specify a number directly: cmake --build . -j4
 ```
 
 This will produce:
