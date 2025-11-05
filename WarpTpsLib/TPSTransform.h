@@ -49,18 +49,18 @@ public:
 	void RemoveAllLandmarks();
 
 	// sets the r-param
-	void SetRExponent(float r_exp) 
-	{ 
-		m_r_exp = r_exp; 
-		m_bRecalc = TRUE;
-		m_bRecalcPresample = TRUE;
+	void SetRExponent(float r_exp)
+	{
+		m_r_exp = r_exp;
+		m_bRecalc = true;
+		m_bRecalcPresample = true;
 	}
 
 	void SetK(float k)
 	{
 		m_k = k;
-		m_bRecalc = TRUE;
-		m_bRecalcPresample = TRUE;
+		m_bRecalc = true;
+		m_bRecalcPresample = true;
 	}
 
 	// evaluates the field at a point
@@ -68,10 +68,10 @@ public:
 	void Eval(const CVectorD<3>::Point_t& vPos, CVectorD<3>::Point_t& vOffset, float percent);
 
 	// resample pixels
-	void ResampleRaw(LPBYTE pSrcPixels, LPBYTE pDstPixels, UINT bytesPerPixel, UINT width, UINT height, UINT stride, float percent);
+	void ResampleRaw(uint8_t* pSrcPixels, uint8_t* pDstPixels, uint32_t bytesPerPixel, uint32_t width, uint32_t height, uint32_t stride, float percent);
 
 	// resample pixels
-	void ResampleRawWithField(LPBYTE pSrcPixels, LPBYTE pDstPixels, UINT bytesPerPixel, UINT width, UINT height, UINT stride, float percent);
+	void ResampleRawWithField(uint8_t* pSrcPixels, uint8_t* pDstPixels, uint32_t bytesPerPixel, uint32_t width, uint32_t height, uint32_t stride, float percent);
 
 protected:
 	// recalculates the TPS from the landmarks
@@ -101,9 +101,9 @@ private:
 	float m_k;
 
 	// flag to indicate that recalculation of the TPS is needed
-	BOOL m_bRecalcMatrix;
-	BOOL m_bRecalc;
-	BOOL m_bRecalcPresample;
+	bool m_bRecalcMatrix;
+	bool m_bRecalc;
+	bool m_bRecalcPresample;
 };
 
 
@@ -138,9 +138,9 @@ inline double distance_function(const CVectorD<3>::Point_t& vL1, const CVectorD<
 // constructs a CTPSTransform object with the given name
 //////////////////////////////////////////////////////////////////////
 inline CTPSTransform::CTPSTransform()
-	: m_bRecalcMatrix(TRUE)
-	, m_bRecalc(TRUE)
-	, m_bRecalcPresample(TRUE)
+	: m_bRecalcMatrix(true)
+	, m_bRecalc(true)
+	, m_bRecalcPresample(true)
 	, m_presampledWidth(0)
 	, m_presampledHeight(0)
 	, m_k(1.0)
@@ -205,12 +205,12 @@ inline void CTPSTransform::SetLandmark(int nIndex, const CVectorD<3>& vLandmark)
 	// only recalc matrix if it is dataset 0
 	if (DATASET == 0)
 	{
-		m_bRecalcMatrix = TRUE;
+		m_bRecalcMatrix = true;
 	}
 
 	// set the flag to indicate recalculation is needed
-	m_bRecalc = TRUE;
-	m_bRecalcPresample = TRUE;
+	m_bRecalc = true;
+	m_bRecalcPresample = true;
 
 }
 
@@ -247,9 +247,9 @@ inline int CTPSTransform::AddLandmark(const CVectorD<3>& vLandmark1,
 	m_arrLandmarkTuples.push_back(std::make_tuple(vLandmark1, vLandmark2));
 
 	// set the flag to indicate recalculation is needed
-	m_bRecalcMatrix = TRUE;
-	m_bRecalc = TRUE;
-	m_bRecalcPresample = TRUE;
+	m_bRecalcMatrix = true;
+	m_bRecalc = true;
+	m_bRecalcPresample = true;
 
 	// return the index of the new landmark
 	return GetLandmarkCount() - 1;
@@ -264,9 +264,9 @@ inline void CTPSTransform::RemoveAllLandmarks()
 {
 	m_arrLandmarkTuples.clear();
 
-	m_bRecalcMatrix = TRUE;
-	m_bRecalc = TRUE;
-	m_bRecalcPresample = TRUE;
+	m_bRecalcMatrix = true;
+	m_bRecalc = true;
+	m_bRecalcPresample = true;
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -336,7 +336,7 @@ inline void CTPSTransform::Presample(int width, int height)
 		m_presampledWidth = width;
 		m_presampledHeight = height;
 		m_presampledOffsets.resize(width * height);
-		m_bRecalcPresample = TRUE;
+		m_bRecalcPresample = true;
 	}
 
 	if (m_bRecalcPresample) {
@@ -353,16 +353,16 @@ inline void CTPSTransform::Presample(int width, int height)
 			bg::set<Y>(vDstPos, vDstPos.get<Y>() + 1.0);
 		}
 
-		m_bRecalcPresample = FALSE;
+		m_bRecalcPresample = false;
 	}
 }
 
 //
-inline void CTPSTransform::ResampleRaw(LPBYTE pSrcPixels, LPBYTE pDstPixels,
-	UINT bytesPerPixel,
-	UINT width,
-	UINT height,
-	UINT stride,
+inline void CTPSTransform::ResampleRaw(uint8_t* pSrcPixels, uint8_t* pDstPixels,
+	uint32_t bytesPerPixel,
+	uint32_t width,
+	uint32_t height,
+	uint32_t stride,
 	float percent)
 {
 	// see if a recalc is needed
@@ -419,11 +419,11 @@ inline void CTPSTransform::ResampleRaw(LPBYTE pSrcPixels, LPBYTE pDstPixels,
 //
 // resamples raw pixels using the presampled vector field
 //////////////////////////////////////////////////////////////////////
-inline void CTPSTransform::ResampleRawWithField(LPBYTE pSrcPixels, LPBYTE pDstPixels,
-	UINT bytesPerPixel,
-	UINT width,
-	UINT height,
-	UINT stride,
+inline void CTPSTransform::ResampleRawWithField(uint8_t* pSrcPixels, uint8_t* pDstPixels,
+	uint32_t bytesPerPixel,
+	uint32_t width,
+	uint32_t height,
+	uint32_t stride,
 	float percent)
 {
 	// see if a recalc is needed
@@ -525,7 +525,7 @@ inline void CTPSTransform::RecalcWeights()
 		m_mL_inv.resize(n + 3, n + 3);
 		invert(mL, m_mL_inv);
 
-		m_bRecalcMatrix = FALSE;
+		m_bRecalcMatrix = false;
 	}
 
 	// compute the x- and y-direction "heights"
@@ -548,5 +548,5 @@ inline void CTPSTransform::RecalcWeights()
 	m_vWy = ublas::prod(m_mL_inv, vHy);
 
 	// unset flag
-	m_bRecalc = FALSE;
+	m_bRecalc = false;
 }
