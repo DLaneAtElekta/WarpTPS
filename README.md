@@ -475,6 +475,16 @@ For bugs, feature requests, or questions:
 - Check existing documentation and demo videos
 - Review the Doxygen-generated API documentation
 
+## Known Issues
+
+- **Python bindings compilation failure**: The Python bindings (`pip install -e .`) fail to compile due to C++ errors in `TPSTransform.h`, including missing Boost.Geometry namespace references (`bg::`), undefined `TRUE` identifiers, and template specialization errors. This blocks the FastAPI server from functioning.
+- **Hardcoded test image paths**: `CWarpTPSDoc::OnNewDocument()` ([src/WarpTPSDoc.cpp:57](src/WarpTPSDoc.cpp#L57)) attempts to load test images from relative paths (`../../TestData/*.bmp`). This fails when the application is run from a different working directory than expected. The application should either:
+  - Use absolute paths or resolve paths relative to the executable location
+  - Gracefully handle missing test images (allow the application to start without them)
+  - Prompt the user to select images on startup
+
+For additional bugs and issues, please check the [GitHub Issues](https://github.com/DLaneAtElekta/WarpTPS/issues) page.
+
 ## Roadmap
 
 Completed:
@@ -483,6 +493,7 @@ Completed:
 - [x] RESTful API server with FastAPI
 
 Potential future enhancements:
+- [ ] Migrate unit tests from Visual Studio native test framework to CTest with Google Test or Catch2
 - [ ] 3D TPS transformations
 - [ ] GPU acceleration for real-time processing
 - [ ] Additional image format support
