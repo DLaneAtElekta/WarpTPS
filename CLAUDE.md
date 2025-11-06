@@ -32,10 +32,10 @@ build_all.bat
 ### Running Tests
 ```batch
 # Run Debug tests
-vstest.console.exe Debug\WarpTpsLib.UnitTest.dll
+vstest.console.exe Debug\WarpTpsLib.UnitTests.dll
 
 # Run Release tests
-vstest.console.exe Release\WarpTpsLib.UnitTest.dll
+vstest.console.exe Release\WarpTpsLib.UnitTests.dll
 ```
 
 ### React Web App
@@ -172,8 +172,8 @@ WarpTPS/
 │   ├── Dib.cpp/h            # Device Independent Bitmap wrapper
 │   └── MorphSlider.cpp/h    # Morphing percentage slider
 │
-├── UnitTest1/               # Microsoft C++ Unit Test project
-│   └── UnitTest1.cpp        # Tests for matrix ops, landmarks, transforms
+├── WarpTpsLib.UnitTests/    # Microsoft C++ Unit Test project
+│   └── WarpTpsLibTests.cpp  # Tests for matrix ops, landmarks, transforms
 │
 ├── WarpWebServer/           # Boost.Asio HTTP server
 │   ├── warp_web_server.cpp  # Entry point
@@ -215,7 +215,7 @@ The heart of TPS is the matrix inversion in `CTPSTransform::RecalcWeights()`. Th
 1. Modify `CTPSTransform` to add the landmark operation
 2. Update `CWarpTPSDoc` to call the new operation
 3. If UI changes needed, update `CDibView` mouse handlers
-4. Add unit test in `UnitTest1/UnitTest1.cpp`
+4. Add unit test in `WarpTpsLib.UnitTests/WarpTpsLibTests.cpp`
 
 ### Modifying the TPS Distance Function
 The distance function is in `CTPSTransform::DistanceFunction()`:
@@ -352,7 +352,7 @@ WarpTPS is a C++ application for interactive Thin Plate Spline (TPS) transformat
 
 ### Testing
 
-- **Unit Tests**: Located in `UnitTest1/`
+- **Unit Tests**: Located in `WarpTpsLib.UnitTests/`
 - **Test Data**: Sample images in `TestData/`
 - Run tests through Visual Studio Test Explorer
 
@@ -402,7 +402,7 @@ WarpTPS/
 │   └── ModelObject.h      # Model management
 ├── WarpWebServer/         # C++ HTTP server
 ├── image-app/             # React web interface
-├── UnitTest1/             # Unit tests
+├── WarpTpsLib.UnitTests/  # Unit tests
 ├── TestData/              # Test images and data
 ├── WarpTpsPackage/        # MSIX packaging
 └── Blendy.sln            # Main Visual Studio solution
