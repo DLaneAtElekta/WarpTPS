@@ -493,6 +493,7 @@ Completed:
 - [x] RESTful API server with FastAPI
 
 Potential future enhancements:
+- [ ] Fix Python bindings compilation errors and publish to PyPI
 - [ ] Migrate unit tests from Visual Studio native test framework to CTest with Google Test or Catch2
 - [ ] 3D TPS transformations
 - [ ] GPU acceleration for real-time processing
