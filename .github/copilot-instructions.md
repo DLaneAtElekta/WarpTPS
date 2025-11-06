@@ -66,7 +66,7 @@ model.computeTransform();
 
 1. Update `TPSTransform.h` with new methods
 2. Implement in `TPSTransform.cpp`
-3. Add unit tests in `UnitTest1/`
+3. Add unit tests in `WarpTpsLib.UnitTests/`
 4. Update documentation comments
 
 ### MFC UI Changes

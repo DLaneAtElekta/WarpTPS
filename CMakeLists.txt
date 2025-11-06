@@ -48,7 +48,7 @@ add_subdirectory(WarpTpsLib)
 add_subdirectory(WarpWebServer)
 add_subdirectory(FeatureExtractionConsole)
 add_subdirectory(src)  # WarpTPS MFC application
-add_subdirectory(UnitTest1)  # Unit tests
+add_subdirectory(WarpTpsLib.UnitTests)  # Unit tests
 
 # Print configuration summary
 message(STATUS "========================================")

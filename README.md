@@ -120,7 +120,7 @@ WarpTPS/
 │   │       └── ImageOps.jsx      # Cloudinary image filters
 │   ├── public/              # Static assets
 │   └── package.json         # Node.js dependencies
-├── UnitTest1/               # Unit tests for core functionality
+├── WarpTpsLib.UnitTests/    # Unit tests for core functionality
 ├── TestData/                # Sample images and test data
 ├── tests/                   # Python binding tests
 │   └── test_basic.py        # pytest tests for Python API
@@ -262,7 +262,7 @@ Thin Plate Spline (TPS) interpolation creates smooth deformation fields from spa
 
 ```batch
 # Run unit tests
-vstest.console.exe Release\WarpTpsLib.UnitTest.dll
+vstest.console.exe Release\WarpTpsLib.UnitTests.dll
 ```
 
 ## Documentation
