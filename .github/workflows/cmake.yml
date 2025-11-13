@@ -63,15 +63,42 @@ jobs:
           ${{github.workspace}}/build/lib/${{ matrix.configuration }}/WarpTpsLib.lib
         retention-days: 30
 
-    - name: Run unit tests (if available)
+    - name: Run C++ unit tests (if available)
       if: matrix.configuration == 'Debug'
-      continue-on-error: true
       shell: pwsh
       run: |
         $testDll = "${{github.workspace}}/build/bin/${{ matrix.configuration }}/WarpTpsLibUnitTest.dll"
         if (Test-Path $testDll) {
-          Write-Host "Running unit tests..."
+          Write-Host "Running C++ unit tests..."
           & vstest.console.exe $testDll
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "C++ unit tests failed"
+            exit 1
+          }
         } else {
           Write-Host "Test DLL not found: $testDll"
         }
+
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install Python package and dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e ".[dev]"
+      shell: pwsh
+
+    - name: Run Python unit tests
+      run: |
+        pytest tests/ -v --tb=short --junitxml=${{github.workspace}}/pytest-results.xml
+      shell: pwsh
+
+    - name: Publish Python test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: pytest-results-${{ matrix.configuration }}
+        path: ${{github.workspace}}/pytest-results.xml
+        retention-days: 30

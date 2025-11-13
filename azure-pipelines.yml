@@ -38,8 +38,7 @@ steps:
     cmakeArgs: '--build . --config $(buildConfiguration) -j 4'
 
 - task: VSTest@2
-  displayName: 'Run Unit Tests'
-  continueOnError: true
+  displayName: 'Run C++ Unit Tests'
   inputs:
     testSelector: 'testAssemblies'
     testAssemblyVer2: |
@@ -50,6 +49,31 @@ steps:
     codeCoverageEnabled: true
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+
+- task: UsePythonVersion@0
+  displayName: 'Use Python 3.12'
+  inputs:
+    versionSpec: '3.12'
+    addToPath: true
+
+- script: |
+    python -m pip install --upgrade pip
+    pip install -e ".[dev]"
+  displayName: 'Install Python Package and Dependencies'
+  workingDirectory: '$(Build.SourcesDirectory)'
+
+- script: |
+    pytest tests/ -v --tb=short --junitxml=$(Build.BinariesDirectory)/pytest-results.xml
+  displayName: 'Run Python Unit Tests'
+  workingDirectory: '$(Build.SourcesDirectory)'
+
+- task: PublishTestResults@2
+  displayName: 'Publish Python Test Results'
+  condition: always()
+  inputs:
+    testResultsFormat: 'JUnit'
+    testResultsFiles: '$(Build.BinariesDirectory)/pytest-results.xml'
+    testRunTitle: 'Python Tests'
 
 - task: CopyFiles@2
   displayName: 'Copy Build Artifacts'
