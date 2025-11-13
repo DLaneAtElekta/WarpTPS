@@ -91,7 +91,7 @@ WarpTPS is a comprehensive C++ application that implements and visualizes [Thin 
 
 ```
 WarpTPS/
-├── src/                      # Main Windows MFC application
+├── App/                      # Main Windows MFC application
 │   ├── WarpTPSDoc.cpp       # Document class for MVC architecture
 │   ├── DibView.cpp          # View implementation for image display
 │   ├── MainFrm.cpp          # Main application frame
@@ -108,21 +108,13 @@ WarpTPS/
 │           ├── __init__.py  # Server package init
 │           ├── __main__.py  # CLI entry point (python -m warptps.server)
 │           └── main.py      # FastAPI application with TPS endpoints
-├── WarpApiServer/           # LEGACY: Standalone server (deprecated, use warptps.server)
-│   ├── README.md            # Migration guide
-│   └── ...                  # Original server files (moved to python/warptps/server/)
-├── WarpWebServer/           # LEGACY: C++ HTTP server (deprecated)
-│   ├── server.cpp           # HTTP server implementation
-│   ├── request_handler.cpp  # Request routing and handling
-│   └── warp_web_server.cpp  # Server entry point
 ├── image-app/               # React-based web interface
 │   ├── src/                 # React components and logic
 │   │   └── Container/
-│   │       ├── TPSWarping.jsx    # NEW: TPS warping component
+│   │       ├── TPSWarping.jsx    # TPS warping component
 │   │       └── ImageOps.jsx      # Cloudinary image filters
 │   ├── public/              # Static assets
 │   └── package.json         # Node.js dependencies
-├── WarpTpsLib.UnitTests/    # Unit tests for core functionality
 ├── TestData/                # Sample images and test data
 ├── tests/                   # Python unit tests
 │   ├── test_basic.py        # Basic Python API tests

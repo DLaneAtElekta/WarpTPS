@@ -29,15 +29,6 @@ build_all.bat
 - Release builds use toolset v142 (VS 2019)
 - Primary platforms: Win32, x64, ARM, ARM64
 
-### Running Tests
-```batch
-# Run Debug tests
-vstest.console.exe Debug\WarpTpsLib.UnitTests.dll
-
-# Run Release tests
-vstest.console.exe Release\WarpTpsLib.UnitTests.dll
-```
-
 ### React Web App
 ```bash
 cd image-app
@@ -56,7 +47,7 @@ npm run build    # Production build
 - Lives in `WarpTpsLib/` directory
 
 **WarpTPS** (MFC Desktop Application)
-- Main interactive application in `src/`
+- Main interactive application in `App/`
 - Document/View architecture managing 5 image views:
   - [0] Destination image
   - [1] Warped source image
@@ -81,16 +72,6 @@ npm run build    # Production build
 - Install: `pip install -e ".[server]"`
 - Run: `python -m warptps.server` or `warptps-server`
 - **This is the recommended server for web interface integration**
-
-**WarpWebServer** (Boost.Asio HTTP Server) - **LEGACY/DEPRECATED**
-- Console application serving basic warped images over HTTP
-- Located in `WarpWebServer/`
-- **Superseded by warptps.server - use the integrated FastAPI server instead**
-
-**WarpApiServer** (Standalone FastAPI) - **DEPRECATED**
-- Original standalone FastAPI server directory
-- Located in `WarpApiServer/`
-- **Superseded by warptps.server - now integrated into the Python package**
 
 **image-app** (React Web Frontend)
 - Modern web interface for image warping
@@ -119,13 +100,13 @@ npm run build    # Production build
 - Supports 2D, 3D, 4D operations
 - Integration with Boost.uBLAS for linear algebra
 
-**CWarpTPSDoc** (`src/WarpTPSDoc.h`)
+**CWarpTPSDoc** (`App/WarpTPSDoc.h`)
 - Document class managing all images and transforms
 - Maintains array of 5 CDib images
 - Owns forward and inverse CTPSTransform instances
 - Handles landmark synchronization between views
 
-**CDibView** (`src/DibView.h`)
+**CDibView** (`App/DibView.h`)
 - Individual image view with interactive landmark editing
 - Handles mouse input for landmark placement/dragging
 - Renders landmarks as colored circles (red/green)
@@ -171,7 +152,7 @@ WarpTPS/
 │   ├── VectorBase.h         # Vector base class
 │   └── MathUtil.h           # Math utilities
 │
-├── src/                     # MFC desktop application
+├── App/                     # MFC desktop application
 │   ├── WarpTPS.cpp/h        # Application entry point
 │   ├── WarpTPSDoc.cpp/h     # Document managing images/transforms
 │   ├── WarpTPSView.cpp/h    # Main view with multiple DibViews
@@ -179,24 +160,30 @@ WarpTPS/
 │   ├── Dib.cpp/h            # Device Independent Bitmap wrapper
 │   └── MorphSlider.cpp/h    # Morphing percentage slider
 │
-├── WarpTpsLib.UnitTests/    # Microsoft C++ Unit Test project
-│   └── WarpTpsLibTests.cpp  # Tests for matrix ops, landmarks, transforms
-│
-├── WarpWebServer/           # Boost.Asio HTTP server
-│   ├── warp_web_server.cpp  # Entry point
-│   ├── server.cpp/hpp       # Server implementation
-│   └── request_handler.cpp  # HTTP request routing
+├── python/                  # Python bindings (pybind11)
+│   └── warptps/             # Python package
+│       ├── __init__.py      # Python API wrappers
+│       └── server/          # FastAPI server subpackage
+│           ├── __init__.py  # Server package init
+│           ├── __main__.py  # CLI entry point
+│           └── main.py      # FastAPI application
 │
 ├── image-app/               # React web frontend
 │   ├── src/App.js           # Main React component
-│   └── src/Container/ImageOps.jsx  # Image operations UI
+│   └── src/Container/
+│       ├── TPSWarping.jsx   # TPS warping component
+│       └── ImageOps.jsx     # Image operations UI
+│
+├── tests/                   # Python unit tests
+│   ├── test_basic.py        # Basic Python API tests
+│   └── test_tps_transform.py # Comprehensive TPS tests
 │
 ├── FeatureExtractionConsole/  # OpenCV SURF feature detection
 ├── BlendySetup/             # WiX installer project
 ├── WarpTpsPackage/          # MSIX package project
 ├── TestData/                # Test images (001.bmp, 002.bmp)
-├── Blendy.sln              # Main Visual Studio solution
-└── build_all.bat           # Convenience build script
+├── CMakeLists.txt           # CMake build configuration
+└── build_all.bat            # Convenience build script
 ```
 
 ## Development Patterns
@@ -293,8 +280,8 @@ Use these for manual testing of the MFC application or unit tests.
 WarpTPS is a C++ application for interactive Thin Plate Spline (TPS) transformation visualization. The project consists of:
 
 - **WarpTpsLib**: Core C++ library implementing TPS transforms using Boost libraries
-- **WarpTPS Desktop App**: Windows MFC-based GUI application (in `src/`)
-- **WarpWebServer**: C++ HTTP server using Boost.Beast
+- **WarpTPS Desktop App**: Windows MFC-based GUI application (in `App/`)
+- **warptps Python Package**: Consolidated Python package with core bindings and integrated FastAPI server
 - **image-app**: React-based web interface for interactive visualization
 - **Build System**: Visual Studio 2022 (v143 toolset), MSBuild, MSIX packaging
 
@@ -398,7 +385,7 @@ doxygen Doxyfile
 
 ```
 WarpTPS/
-├── src/                    # Main MFC application
+├── App/                    # Main MFC application
 │   ├── WarpTPSDoc.cpp     # Document class
 │   ├── DibView.cpp        # View implementation
 │   └── MainFrm.cpp        # Main frame window
@@ -406,12 +393,15 @@ WarpTPS/
 │   ├── TPSTransform.h     # TPS algorithm implementation
 │   ├── VectorD.h          # Vector math
 │   └── ModelObject.h      # Model management
-├── WarpWebServer/         # C++ HTTP server
+├── python/                # Python bindings and server
+│   └── warptps/           # Python package
+│       ├── __init__.py    # Core bindings
+│       └── server/        # Integrated FastAPI server
 ├── image-app/             # React web interface
-├── WarpTpsLib.UnitTests/  # Unit tests
+├── tests/                 # Python unit tests
 ├── TestData/              # Test images and data
 ├── WarpTpsPackage/        # MSIX packaging
-└── Blendy.sln            # Main Visual Studio solution
+└── CMakeLists.txt         # CMake build configuration
 ```
 
 ## Git Workflow
