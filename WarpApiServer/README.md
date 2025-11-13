@@ -1,5 +1,26 @@
 # WarpTPS FastAPI Server
 
+> **⚠️ DEPRECATED:** This standalone server directory is deprecated. The FastAPI server has been **consolidated into the main `warptps` Python package** as `warptps.server`.
+>
+> **New location:** `python/warptps/server/`
+>
+> **Migration instructions:**
+> ```bash
+> # Install with server dependencies
+> pip install -e ".[server]"
+>
+> # Run server
+> python -m warptps.server
+> # or
+> warptps-server
+> ```
+>
+> See the main [README.md](../README.md) for updated documentation.
+
+---
+
+**Original documentation (for reference only):**
+
 This is a Python-based FastAPI server that replaces the original C++ WarpWebServer. It provides HTTP endpoints for thin plate spline (TPS) image warping and morphing using the WarpTPS Python bindings.
 
 ## Features
