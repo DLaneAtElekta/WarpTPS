@@ -103,12 +103,14 @@ WarpTPS/
 │   └── MathUtil.h           # Mathematical utility functions
 ├── python/                   # Python bindings (pybind11)
 │   └── warptps/             # Python package
-│       └── __init__.py      # Python API wrappers
-├── WarpApiServer/           # NEW: FastAPI server (replaces WarpWebServer)
-│   ├── main.py              # FastAPI application with TPS endpoints
-│   ├── requirements.txt     # Python dependencies
-│   ├── start_server.sh      # Linux/Mac startup script
-│   └── start_server.bat     # Windows startup script
+│       ├── __init__.py      # Python API wrappers
+│       └── server/          # FastAPI server subpackage
+│           ├── __init__.py  # Server package init
+│           ├── __main__.py  # CLI entry point (python -m warptps.server)
+│           └── main.py      # FastAPI application with TPS endpoints
+├── WarpApiServer/           # LEGACY: Standalone server (deprecated, use warptps.server)
+│   ├── README.md            # Migration guide
+│   └── ...                  # Original server files (moved to python/warptps/server/)
 ├── WarpWebServer/           # LEGACY: C++ HTTP server (deprecated)
 │   ├── server.cpp           # HTTP server implementation
 │   ├── request_handler.cpp  # Request routing and handling
@@ -122,8 +124,9 @@ WarpTPS/
 │   └── package.json         # Node.js dependencies
 ├── WarpTpsLib.UnitTests/    # Unit tests for core functionality
 ├── TestData/                # Sample images and test data
-├── tests/                   # Python binding tests
-│   └── test_basic.py        # pytest tests for Python API
+├── tests/                   # Python unit tests
+│   ├── test_basic.py        # Basic Python API tests
+│   └── test_tps_transform.py # Comprehensive TPS transform tests
 ├── WarpTpsPackage/          # MSIX packaging configuration
 ├── FeatureExtractionConsole/# Command-line feature extraction tool
 ├── cmake/                    # CMake modules
@@ -177,14 +180,22 @@ pip install -e .
 
 ### Starting the FastAPI Server
 
-```bash
-cd WarpApiServer
-pip install -r requirements.txt
-python main.py
+The FastAPI server is now integrated into the `warptps` package:
 
-# Or use the convenience scripts:
-# Linux/Mac: ./start_server.sh
-# Windows: start_server.bat
+```bash
+# Install with server dependencies
+pip install -e ".[server]"
+
+# Run the server (multiple options):
+
+# Option 1: As a module
+python -m warptps.server
+
+# Option 2: Using the installed command (after pip install)
+warptps-server
+
+# Option 3: With custom host/port
+python -m warptps.server --host 0.0.0.0 --port 8080
 ```
 
 The server will start on http://localhost:8000 with interactive API docs at http://localhost:8000/docs
@@ -239,10 +250,16 @@ Thin Plate Spline (TPS) interpolation creates smooth deformation fields from spa
 
 - **WarpTpsLib** - Core C++ library implementing TPS mathematics (header-only templates)
 - **WarpTPS** - MFC desktop application with interactive UI
-- **Python Bindings** - pybind11-based Python API for TPS transformations
-- **WarpApiServer** - Modern FastAPI server providing RESTful TPS endpoints (replaces WarpWebServer)
-- **WarpWebServer** - (Legacy) C++ HTTP server (Boost.Asio) - deprecated in favor of WarpApiServer
+- **warptps Python Package** - Consolidated Python package with:
+  - **Core bindings** - pybind11-based Python API for TPS transformations
+  - **warptps.server** - Integrated FastAPI server providing RESTful TPS endpoints
+  - Install core: `pip install -e .`
+  - Install with server: `pip install -e ".[server]"`
 - **image-app** - React web frontend with Material-UI, featuring interactive TPS warping
+
+**Legacy components (deprecated):**
+- **WarpWebServer** - Original C++ HTTP server (Boost.Asio)
+- **WarpApiServer** - Standalone FastAPI server (now integrated into `warptps.server`)
 
 ## Use Cases
 

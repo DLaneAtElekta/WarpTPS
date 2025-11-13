@@ -72,25 +72,32 @@ npm run build    # Production build
 - Located in `python/warptps/`
 - Installed via `pip install -e .`
 
-**WarpApiServer** (FastAPI Server) - **NEW AND PREFERRED**
+**warptps.server** (FastAPI Server) - **INTEGRATED PACKAGE**
 - Modern RESTful API server for TPS operations
 - Python-based using FastAPI and uvicorn
 - Provides endpoints for image warping, morphing, and point transformation
 - Interactive API documentation at `/docs`
-- Located in `WarpApiServer/`
-- **This replaces WarpWebServer for web interface integration**
+- Located in `python/warptps/server/`
+- Install: `pip install -e ".[server]"`
+- Run: `python -m warptps.server` or `warptps-server`
+- **This is the recommended server for web interface integration**
 
 **WarpWebServer** (Boost.Asio HTTP Server) - **LEGACY/DEPRECATED**
 - Console application serving basic warped images over HTTP
 - Located in `WarpWebServer/`
-- **Superseded by WarpApiServer - use the FastAPI server instead**
+- **Superseded by warptps.server - use the integrated FastAPI server instead**
+
+**WarpApiServer** (Standalone FastAPI) - **DEPRECATED**
+- Original standalone FastAPI server directory
+- Located in `WarpApiServer/`
+- **Superseded by warptps.server - now integrated into the Python package**
 
 **image-app** (React Web Frontend)
 - Modern web interface for image warping
 - Features interactive TPS warping with landmark placement (new!)
 - Also includes Cloudinary-based color filters (legacy)
 - Located in `image-app/`
-- Connects to WarpApiServer for TPS operations
+- Connects to warptps.server for TPS operations
 
 ### Key Classes and Their Responsibilities
 
@@ -228,19 +235,18 @@ Modify `k` (scaling factor) or `r_exp` (exponent) for different interpolation be
 
 ### Working with the Web Components
 
-#### WarpApiServer (FastAPI - Recommended)
-The new FastAPI server provides a modern RESTful API:
+#### warptps.server (FastAPI - Integrated)
+The FastAPI server is now integrated into the warptps Python package:
 
 **Starting the server:**
 ```bash
-# Install Python bindings first
-pip install -e .
+# Install with server dependencies
+pip install -e ".[server]"
 
-# Start the server
-cd WarpApiServer
-pip install -r requirements.txt
-python main.py
-# or use: ./start_server.sh (Linux/Mac) or start_server.bat (Windows)
+# Start the server (multiple options):
+python -m warptps.server              # Run as module
+warptps-server                        # Run as command
+python -m warptps.server --port 8080  # Custom port
 ```
 
 **Key endpoints:**
@@ -251,13 +257,13 @@ python main.py
 - `GET /docs` - Interactive API documentation (Swagger UI)
 
 **Adding new endpoints:**
-1. Add endpoint function in `WarpApiServer/main.py`
-2. Import `warptps` Python package
+1. Add endpoint function in `python/warptps/server/main.py`
+2. Import `warptps` Python package (available as it's in the same package)
 3. Use Pydantic models for request/response validation
 4. Return JSON or binary image data
 
-#### WarpWebServer (C++ Boost.Beast - Legacy)
-The old C++ server is deprecated but remains for reference. Use WarpApiServer instead for new development.
+#### Legacy Servers (Deprecated)
+Both the C++ WarpWebServer and standalone WarpApiServer are deprecated. Use the integrated `warptps.server` for all new development.
 
 ## CI/CD
 

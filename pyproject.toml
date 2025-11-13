@@ -37,11 +37,23 @@ dev = [
     "black>=23.0",
     "mypy>=1.0",
 ]
+server = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.31.0",
+    "python-multipart>=0.0.9",
+    "Pillow>=10.0.0",
+]
+all = [
+    "warptps[dev,server]",
+]
 
 [project.urls]
 Homepage = "https://github.com/DLaneAtElekta/WarpTPS"
 Repository = "https://github.com/DLaneAtElekta/WarpTPS"
 Documentation = "https://github.com/DLaneAtElekta/WarpTPS"
+
+[project.scripts]
+warptps-server = "warptps.server.__main__:main"
 
 [tool.scikit-build]
 cmake.minimum-version = "3.15"
