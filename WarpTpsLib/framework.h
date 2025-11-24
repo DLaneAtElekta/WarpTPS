@@ -1,7 +1,8 @@
 #pragma once
 
-#include "targetver.h"
-
+// Cross-platform type definitions
+// When MFC is available, use MFC types for compatibility with existing code
+// Otherwise, use standard C++ types
 
 #ifdef __AFX_H__
 #ifndef VC_EXTRALEAN
@@ -12,12 +13,13 @@
 
 #include <afxwin.h>         // MFC core and standard components
 #else
-typedef int BOOL;
-#define TRUE 1
-#define FALSE 0
+// Cross-platform includes
+#include <cstdint>
+#include <cassert>
 
+// Legacy Windows type compatibility (only when not using MFC)
 typedef unsigned char BYTE;
-typedef BYTE * LPBYTE;
-typedef unsigned int  UINT;
+typedef BYTE* LPBYTE;
+
 #define ASSERT assert
 #endif
